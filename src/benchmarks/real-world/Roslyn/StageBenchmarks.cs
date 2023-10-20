@@ -81,12 +81,15 @@ namespace CompilerBenchmarks
         {
             LoadCompilationAndGetDiagnostics();
 
+            // internal
             _options = EmitOptions.Default.WithIncludePrivateMembers(true);
 
             bool embedPdb = _options.DebugInformationFormat == DebugInformationFormat.Embedded;
 
+            // internal
             var diagnostics = DiagnosticBag.GetInstance();
 
+            // internal
             _moduleBeingBuilt = _comp.CheckOptionsAndCreateModuleBuilder(
                 diagnostics,
                 manifestResources: null,
@@ -99,10 +102,12 @@ namespace CompilerBenchmarks
 
             bool success = false;
 
+            // internal
             success = _comp.CompileMethods(
                 _moduleBeingBuilt,
                 emittingPdb: embedPdb,
                 emitMetadataOnly: _options.EmitMetadataOnly,
+                // internal
                 emitTestCoverageData: _options.EmitTestCoverageData,
                 diagnostics: diagnostics,
                 filterOpt: null,
@@ -113,10 +118,14 @@ namespace CompilerBenchmarks
                 throw new InvalidOperationException("Did not successfully compile methods");
             }
 
+            // internal
             _comp.GenerateResources(_moduleBeingBuilt, win32Resources: null, useRawWin32Resources: false, diagnostics, cancellationToken: default);
+            // internal
             _comp.GenerateDocumentationComments(xmlDocStream: null, _options.OutputNameOverride, diagnostics, cancellationToken: default);
 
+            // internal
             _comp.ReportUnusedImports(diagnostics, default);
+            // internal
             _moduleBeingBuilt.CompilationFinished();
 
             diagnostics.Free();
@@ -126,10 +135,13 @@ namespace CompilerBenchmarks
         public Stream SerializeMetadata()
         {
             _peStream.Position = 0;
+            // internal
             var diagnostics = DiagnosticBag.GetInstance();
 
+            // internal
             _comp.SerializeToPeStream(
                 _moduleBeingBuilt,
+                // internal
                 new SimpleEmitStreamProvider(_peStream),
                 metadataPEStreamProvider: null,
                 pdbStreamProvider: null,
